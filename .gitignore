@@ -4,3 +4,8 @@ dist/
 .respira-tally-config.json
 .DS_Store
 *.log
+website/
+*.html
+landing-page/
+marketing/
+
