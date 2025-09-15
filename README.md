@@ -4,13 +4,17 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-blue)](https://www.typescriptlang.org/)
 
-> **Create Tally.so forms using natural language descriptions!** 🎯
+> **Transform complex prompts into live Tally forms instantly!** 🎯
 
-Respira Tally is a powerful Node.js application that allows you to create Tally.so forms programmatically by simply describing what you want in plain English. Perfect for therapists, coaches, event organizers, and anyone who needs to create forms quickly and efficiently.
+**Respira Tally** is a powerful Node.js application that brings forms into existence by converting natural language descriptions into fully functional Tally.so forms. Simply paste complex prompts (generated with other AIs if needed) and watch as your forms are automatically created in your Tally account. The free Tally account provides everything you need - API access, unlimited forms, and all the features required for this to work seamlessly.
+
+**🎁 Get 50% off Tally with our referral link:** [https://tally.cello.so/oBdspINgDfE](https://tally.cello.so/oBdspINgDfE)
+
+Perfect for therapists, coaches, event organizers, and anyone who needs to create forms quickly and efficiently without the hassle of manual form building.
 
 ## ✨ Features
 
-- 🎯 **Natural Language Form Creation** - Describe your form in plain English
+- 🎯 **AI-Powered Form Creation** - Paste complex prompts from ChatGPT, Claude, or any AI and watch forms come to life
 - 🌐 **Beautiful Web Interface** - User-friendly UI for form creation
 - 📝 **Complete Tally.so Integration** - Full CRUD operations for forms
 - 🖥️ **Command-Line Interface** - Easy-to-use CLI with multiple commands
@@ -18,6 +22,7 @@ Respira Tally is a powerful Node.js application that allows you to create Tally.
 - 🔐 **Secure API Management** - Safe API key handling and configuration
 - 📚 **Comprehensive Documentation** - Examples, guides, and API reference
 - 🚀 **Ready to Deploy** - Works out of the box with minimal setup
+- 🆓 **Free Tally Account** - Everything you need included in Tally's free tier
 
 ## 🧪 Testing
 
@@ -86,6 +91,20 @@ Respira Tally is a powerful Node.js application that allows you to create Tally.
 - A Tally.so account with API access
 - Tally.so API key
 
+### 🎁 Get Started with Tally (50% Off!)
+
+1. **Sign up for Tally** using our referral link: [https://tally.cello.so/oBdspINgDfE](https://tally.cello.so/oBdspINgDfE)
+   - Get **50% off** for 3 months on any plan
+   - Free account includes unlimited forms and API access
+   - No credit card required to start
+
+2. **Get your API key:**
+   - Go to [Tally Settings > API](https://tally.so/settings/api)
+   - Generate your API key
+   - Copy it for use with Respira Tally
+
+3. **Start creating forms instantly!**
+
 ### Installation
 
 ```bash
@@ -128,11 +147,19 @@ npm run cli list
 
 ## 🎯 Examples
 
+### AI-Generated Prompt Examples
+
+**From ChatGPT/Claude:** *"Create a comprehensive customer feedback form for a SaaS company that includes: customer satisfaction rating (1-10), feature request section, bug report with severity levels, contact information, company size, and optional file uploads for screenshots"*
+
+**From AI Assistant:** *"Build a therapy intake form with: personal information, medical history, current symptoms checklist, treatment goals, emergency contact, insurance information, and consent forms"*
+
+**From AI:** *"Design an event registration form for a tech conference with: attendee details, dietary restrictions, workshop preferences, networking interests, and payment processing"*
+
 ### Web Interface
 1. Start the web server: `npm run web`
 2. Open http://localhost:3000
 3. Add your Tally API key
-4. Describe your form: *"Create a contact form with name, email, phone, and message fields"*
+4. Paste any AI-generated prompt above
 5. Click "Create Form" and get your form URL!
 
 ### Interactive Mode
