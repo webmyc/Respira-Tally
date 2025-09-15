@@ -1,0 +1,75 @@
+{
+  "name": "respira-tally",
+  "version": "1.0.0",
+  "description": "Respira Tally - Natural Language Form Creator with Web UI. Create Tally.so forms using AI-powered descriptions.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "cli": "ts-node src/cli.ts",
+    "web": "ts-node src/web-server.ts",
+    "dev:web": "ts-node src/web-server.ts",
+    "test": "node test/test-runner.js"
+  },
+  "keywords": [
+    "tally",
+    "forms",
+    "ai",
+    "natural-language",
+    "form-builder",
+    "web-ui",
+    "typescript",
+    "open-source",
+    "respira"
+  ],
+  "author": {
+    "name": "Respira Community",
+    "email": "hello@respira.com",
+    "url": "https://respira.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webmyc/Respira-Tally.git"
+  },
+  "bugs": {
+    "url": "https://github.com/webmyc/Respira-Tally/issues"
+  },
+  "homepage": "https://github.com/webmyc/Respira-Tally#readme",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.3.1",
+    "inquirer": "^9.2.12",
+    "chalk": "^4.1.2",
+    "uuid": "^8.3.2",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/uuid": "^8.3.4",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "typescript": "^5.2.2",
+    "ts-node": "^10.9.1"
+  },
+  "bin": {
+    "respira-tally": "./dist/cli.js"
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "public/",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ]
+}

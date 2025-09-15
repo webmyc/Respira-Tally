@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respira Tally - AI Form Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #4a5568;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .status-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .status-warning {
+            background: #fefcbf;
+            color: #744210;
+            border: 1px solid #f6e05e;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #feb2b2;
+        }
+
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .form-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .form-card p {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .form-card .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-card .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-magic"></i> Respira Tally</h1>
+            <p>Create Tally.so forms using natural language descriptions</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="main-content">
+            <!-- API Key Configuration -->
+            <div class="card">
+                <h2><i class="fas fa-key"></i> API Configuration</h2>
+                <div id="api-status">
+                    <div class="form-group">
+                        <label for="api-key">Tally.so API Key</label>
+                        <input type="password" id="api-key" placeholder="Enter your Tally API key (tly-...)" />
+                        <small style="color: #718096; margin-top: 5px; display: block;">
+                            Get your API key from <a href="https://tally.so/settings/api" target="_blank" style="color: #667eea;">Tally Settings</a>
+                        </small>
+                    </div>
+                    <button class="btn" id="validate-key-btn">
+                        <i class="fas fa-check"></i> Validate & Save Key
+                    </button>
+                    <button class="btn btn-secondary" id="clear-key-btn" style="margin-left: 10px;">
+                        <i class="fas fa-trash"></i> Clear Key
+                    </button>
+                </div>
+                <div id="api-status-display" class="hidden">
+                    <div class="status-indicator status-success">
+                        <i class="fas fa-check-circle"></i>
+                        API Key Valid
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Creation -->
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Create Form</h2>
+                <div class="form-group">
+                    <label for="form-prompt">Describe your form</label>
+                    <textarea id="form-prompt" placeholder="e.g., Create a contact form with name, email, phone, and message fields"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="form-title">Form Title (optional)</label>
+                    <input type="text" id="form-title" placeholder="Leave empty to auto-generate" />
+                </div>
+                <button class="btn" id="create-form-btn">
+                    <i class="fas fa-magic"></i> Create Form
+                </button>
+                <button class="btn btn-secondary" id="create-contact-btn" style="margin-left: 10px;">
+                    <i class="fas fa-envelope"></i> Quick Contact Form
+                </button>
+            </div>
+        </div>
+
+        <!-- Forms List -->
+        <div class="card full-width">
+            <h2><i class="fas fa-list"></i> Your Forms</h2>
+            <button class="btn btn-secondary" id="refresh-forms-btn">
+                <i class="fas fa-sync-alt"></i> Refresh Forms
+            </button>
+            <div id="forms-container">
+                <div style="text-align: center; padding: 40px; color: #718096;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>Loading your forms...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class RespiraTally {
+            constructor() {
+                this.apiKey = null;
+                this.forms = [];
+                this.init();
+            }
+
+            async init() {
+                await this.checkApiStatus();
+                this.bindEvents();
+                await this.loadForms();
+            }
+
+            async checkApiStatus() {
+                try {
+                    const response = await fetch('/api/key-status');
+                    const data = await response.json();
+                    
+                    if (data.success && data.hasKey && data.isValid) {
+                        this.showApiStatus(true, data.userEmail);
+                    } else {
+                        this.showApiStatus(false);
+                    }
+                } catch (error) {
+                    console.error('Error checking API status:', error);
+                }
+            }
+
+            showApiStatus(isValid, userEmail = null) {
+                const statusDisplay = document.getElementById('api-status-display');
+                const apiKeyInput = document.getElementById('api-key');
+                
+                if (isValid) {
+                    statusDisplay.innerHTML = `
+                        <div class="status-indicator status-success">
+                            <i class="fas fa-check-circle"></i>
+                            API Key Valid${userEmail ? ` (${userEmail})` : ''}
+                        </div>
+                    `;
+                    statusDisplay.classList.remove('hidden');
+                    apiKeyInput.style.borderColor = '#9ae6b4';
+                } else {
+                    statusDisplay.classList.add('hidden');
+                    apiKeyInput.style.borderColor = '#e2e8f0';
+                }
+            }
+
+            bindEvents() {
+                document.getElementById('validate-key-btn').addEventListener('click', () => this.validateApiKey());
+                document.getElementById('clear-key-btn').addEventListener('click', () => this.clearApiKey());
+                document.getElementById('create-form-btn').addEventListener('click', () => this.createForm());
+                document.getElementById('create-contact-btn').addEventListener('click', () => this.createContactForm());
+                document.getElementById('refresh-forms-btn').addEventListener('click', () => this.loadForms());
+            }
+
+            async validateApiKey() {
+                const apiKey = document.getElementById('api-key').value.trim();
+                const btn = document.getElementById('validate-key-btn');
+                
+                if (!apiKey) {
+                    this.showAlert('Please enter your API key', 'error');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading"></div> Validating...';
+
+                try {
+                    const response = await fetch('/api/validate-key', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ apiKey })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert('API key validated successfully!', 'success');
+                        this.showApiStatus(true, data.user?.email);
+                        document.getElementById('api-key').value = '';
+                        await this.loadForms();
+                    } else {
+                        this.showAlert(data.error || 'Invalid API key', 'error');
+                    }
+                } catch (error) {
+                    this.showAlert('Error validating API key', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Validate & Save Key';
+                }
+            }
+
+            async clearApiKey() {
+                try {
+                    const response = await fetch('/api/clear-key', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.showAlert('API key cleared', 'success');
+                        this.showApiStatus(false);
+                        document.getElementById('api-key').value = '';
+                        this.forms = [];
+                        this.renderForms();
+                    }
+                } catch (error) {
+                    this.showAlert('Error clearing API key', 'error');
+                }
+            }
+
+            async createForm() {
+                const prompt = document.getElementById('form-prompt').value.trim();
+                const title = document.getElementById('form-title').value.trim();
+                const btn = document.getElementById('create-form-btn');
+
+                if (!prompt) {
+                    this.showAlert('Please describe your form', 'error');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading"></div> Creating...';
+
+                try {
+                    const response = await fetch('/api/create-form', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            prompt, 
+                            options: { title: title || undefined }
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert(`Form "${data.form.name}" created successfully!`, 'success');
+                        document.getElementById('form-prompt').value = '';
+                        document.getElementById('form-title').value = '';
+                        await this.loadForms();
+                    } else {
+                        this.showAlert(data.error || 'Error creating form', 'error');
+                    }
+                } catch (error) {
+                    this.showAlert('Error creating form', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-magic"></i> Create Form';
+                }
+            }
+
+            async createContactForm() {
+                const btn = document.getElementById('create-contact-btn');
+
+                btn.disabled = true;
+                btn.innerHTML = '<div class="loading"></div> Creating...';
+
+                try {
+                    const response = await fetch('/api/create-contact-form', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ options: {} })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert(`Contact form "${data.form.name}" created successfully!`, 'success');
+                        await this.loadForms();
+                    } else {
+                        this.showAlert(data.error || 'Error creating contact form', 'error');
+                    }
+                } catch (error) {
+                    this.showAlert('Error creating contact form', 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-envelope"></i> Quick Contact Form';
+                }
+            }
+
+            async loadForms() {
+                try {
+                    const response = await fetch('/api/forms');
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.forms = data.forms;
+                        this.renderForms();
+                    } else {
+                        this.renderForms(data.error);
+                    }
+                } catch (error) {
+                    this.renderForms('Error loading forms');
+                }
+            }
+
+            renderForms(error = null) {
+                const container = document.getElementById('forms-container');
+                
+                if (error) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #e53e3e;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>${error}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (this.forms.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #718096;">
+                            <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>No forms found. Create your first form above!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div class="forms-grid">
+                        ${this.forms.map(form => `
+                            <div class="form-card">
+                                <h3>${form.name}</h3>
+                                <p>
+                                    <strong>Status:</strong> ${form.status}<br>
+                                    <strong>Created:</strong> ${new Date(form.createdAt).toLocaleDateString()}
+                                </p>
+                                <div class="form-actions">
+                                    <a href="${form.url}" target="_blank" class="btn">
+                                        <i class="fas fa-external-link-alt"></i> View Form
+                                    </a>
+                                    <button class="btn btn-secondary" onclick="respiraTally.deleteForm('${form.id}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            async deleteForm(formId) {
+                if (!confirm('Are you sure you want to delete this form?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/forms/${formId}`, { method: 'DELETE' });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        this.showAlert('Form deleted successfully', 'success');
+                        await this.loadForms();
+                    } else {
+                        this.showAlert(data.error || 'Error deleting form', 'error');
+                    }
+                } catch (error) {
+                    this.showAlert('Error deleting form', 'error');
+                }
+            }
+
+            showAlert(message, type = 'success') {
+                const container = document.getElementById('alert-container');
+                const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+                
+                container.innerHTML = `
+                    <div class="alert ${alertClass}">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                        ${message}
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        // Initialize the application
+        const respiraTally = new RespiraTally();
+    </script>
+</body>
+</html>
