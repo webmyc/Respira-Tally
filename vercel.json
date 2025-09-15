@@ -14,10 +14,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "functions": {
-    "dist/web-server.js": {
-      "maxDuration": 30
-    }
   }
 }
