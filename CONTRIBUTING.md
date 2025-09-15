@@ -16,8 +16,8 @@ Thank you for your interest in contributing to Respira Tally! We welcome contrib
 1. **Fork the repository**
    ```bash
    # Fork on GitHub, then clone your fork
-   git clone https://github.com/your-username/tally-form-creator.git
-   cd tally-form-creator
+   git clone https://github.com/your-username/Respira-Tally.git
+   cd Respira-Tally
    ```
 
 2. **Install dependencies**
@@ -27,11 +27,11 @@ Thank you for your interest in contributing to Respira Tally! We welcome contrib
 
 3. **Set up environment**
    ```bash
-   # Copy environment template
-   cp .env.example .env
+   # Set your Tally API key
+   export TALLY_API_KEY=your_api_key_here
    
-   # Add your Tally API key
-   echo "TALLY_API_KEY=your_api_key_here" >> .env
+   # Or create a .env file
+   echo "TALLY_API_KEY=your_api_key_here" > .env
    ```
 
 4. **Build the project**
@@ -42,11 +42,52 @@ Thank you for your interest in contributing to Respira Tally! We welcome contrib
 5. **Run in development mode**
    ```bash
    # Start web interface
-   npm run dev:web
+   npm run web
    
    # Or run CLI
-   npm run dev
+   npm run cli interactive
    ```
+
+## 🏗️ Project Structure
+
+```
+Respira-Tally/
+├── src/
+│   ├── index.ts              # Main application class
+│   ├── tally-client.ts       # Tally.so API client
+│   ├── form-prompt-parser.ts # Natural language form parser
+│   ├── web-server.ts         # Express web server
+│   ├── cli.ts               # Command-line interface
+│   ├── types/
+│   │   └── tally.ts         # TypeScript type definitions
+│   └── utils/
+│       └── config.ts        # Configuration management
+├── public/
+│   └── index.html           # Web interface
+├── test/
+│   └── test-runner.js       # Test suite
+└── dist/                    # Compiled TypeScript
+```
+
+## 🎯 Contribution Areas
+
+### High Priority
+- **AI Prompt Parsing**: Improve natural language form creation
+- **Web UI Enhancements**: Better user experience and design
+- **API Error Handling**: More robust error handling and user feedback
+- **Testing**: Add comprehensive test coverage
+- **Documentation**: Improve API documentation and examples
+
+### Medium Priority
+- **Performance**: Optimize form creation speed
+- **Security**: Enhance API key handling and validation
+- **Accessibility**: Improve web interface accessibility
+- **Internationalization**: Support for multiple languages
+
+### Low Priority
+- **CLI Enhancements**: Additional command-line features
+- **Integration**: Connect with more form platforms
+- **Analytics**: Usage tracking and insights
 
 ## 🛠️ Development Workflow
 
@@ -224,14 +265,15 @@ Brief description of changes
 ## 📞 Getting Help
 
 ### Questions?
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/respira/tally-form-creator/discussions)
-- 📧 **Email**: [hello@respira.com](mailto:hello@respira.com)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/respira/tally-form-creator/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/webmyc/Respira-Tally/discussions)
+- 📧 **Email**: [mihai@respira.cafe](mailto:mihai@respira.cafe)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/webmyc/Respira-Tally/issues)
 
 ### Resources
 - [Tally.so API Documentation](https://developers.tally.so/api-reference)
 - [Node.js Documentation](https://nodejs.org/docs/)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Express.js Guide](https://expressjs.com/en/guide/routing.html)
 
 ## 🙏 Recognition
 
