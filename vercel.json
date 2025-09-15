@@ -4,9 +4,25 @@
     {
       "src": "dist/web-server.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "website/index.html",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/",
+      "dest": "website/index.html"
+    },
+    {
+      "src": "/app/(.*)",
+      "dest": "dist/web-server.js"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "dist/web-server.js"
+    },
     {
       "src": "/(.*)",
       "dest": "dist/web-server.js"
