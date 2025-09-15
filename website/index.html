@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Respira Forms Pro - AI-Powered Form Creation for Tally</title>
+    <meta name="description" content="Transform AI prompts into live Tally forms instantly. Professional form creation that works seamlessly with Tally.so - paste complex descriptions and watch forms come to life in seconds.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            color: #22c55e;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #22c55e;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: #22c55e;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .hero .tagline {
+            font-size: 1.2rem;
+            color: #a3a3a3;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 60px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            padding: 16px 32px;
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #22c55e;
+            transform: translateY(-3px);
+        }
+
+        .trust-badge {
+            color: #a3a3a3;
+            font-size: 0.9rem;
+        }
+
+        /* Problem Section */
+        .problem {
+            padding: 100px 0;
+            background: #111111;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #ffffff;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .problem-card {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            transition: transform 0.3s ease;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .problem-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ef4444;
+        }
+
+        .problem-card p {
+            color: #a3a3a3;
+            line-height: 1.7;
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: 100px 0;
+            background: #0a0a0a;
+        }
+
+        .solution-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .solution-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #ffffff;
+        }
+
+        .solution-text p {
+            font-size: 1.1rem;
+            color: #a3a3a3;
+            margin-bottom: 30px;
+        }
+
+        .features-list {
+            list-style: none;
+        }
+
+        .features-list li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .features-list i {
+            color: #22c55e;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+
+        .demo-box {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .demo-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #22c55e;
+        }
+
+        .demo-code {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            color: #22c55e;
+            margin-bottom: 20px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .demo-result {
+            background: #0a0a0a;
+            padding: 20px;
+            border-radius: 8px;
+            color: #ffffff;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+            background: #111111;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            color: #a3a3a3;
+            line-height: 1.7;
+        }
+
+        /* Testimonial */
+        .testimonial {
+            padding: 100px 0;
+            background: #0a0a0a;
+            text-align: center;
+        }
+
+        .testimonial-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .testimonial-text {
+            font-size: 1.5rem;
+            font-style: italic;
+            color: #ffffff;
+            margin-bottom: 30px;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            color: #22c55e;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 0;
+            background: #111111;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid #22c55e;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: "Most Popular";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #22c55e;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #22c55e;
+            margin-bottom: 10px;
+        }
+
+        .pricing-period {
+            color: #a3a3a3;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            color: #ffffff;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            color: #a3a3a3;
+            margin-bottom: 40px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 60px 0;
+            background: #0a0a0a;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            color: #22c55e;
+            margin-bottom: 20px;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #a3a3a3;
+            text-decoration: none;
+            line-height: 1.7;
+        }
+
+        .footer-section a:hover {
+            color: #22c55e;
+        }
+
+        .disclaimer {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .disclaimer p {
+            color: #a3a3a3;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .solution-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <div class="logo">Respira Forms Pro</div>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                </ul>
+                <a href="https://github.com/webmyc/Respira-Tally" class="cta-button">Get Started</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Professional Form Creation</h1>
+            <div class="subtitle">AI-Powered • Built for Tally</div>
+            <p class="tagline">Transform complex AI prompts into fully functional Tally forms in seconds. Professional-grade form creation that works seamlessly with Tally.so - no more clicking through form builders.</p>
+            
+            <div class="hero-buttons">
+                <a href="https://github.com/webmyc/Respira-Tally" class="btn-primary">
+                    <i class="fab fa-github"></i> Get Started Free
+                </a>
+                <a href="https://tally.cello.so/oBdspINgDfE" class="btn-secondary">
+                    <i class="fas fa-gift"></i> Get 50% Off Tally
+                </a>
+            </div>
+            
+            <p class="trust-badge">Professional form creation powered by Tally.so</p>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem">
+        <div class="container">
+            <h2 class="section-title">What's slowing you down?</h2>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <h3>Manual Form Building</h3>
+                    <p>Spending 45+ minutes clicking through form builders, dragging fields, and configuring settings when you could just describe what you need.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Context Switching</h3>
+                    <p>Jumping between your AI assistant, form builder, and other tools breaks your flow and kills productivity.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Complex Requirements</h3>
+                    <p>Client requirements are complex, but form builders are simple. You need something that understands nuance and creates exactly what you need.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution" id="how-it-works">
+        <div class="container">
+            <div class="solution-content">
+                <div class="solution-text">
+                    <h2>How Respira Forms Pro turns chaos into clarity</h2>
+                    <p>Professional-grade form creation that works seamlessly with Tally.so. Smart, focused, and AI-powered features that understand exactly what you need.</p>
+                    
+                    <ul class="features-list">
+                        <li><i class="fas fa-magic"></i> AI-powered form parsing</li>
+                        <li><i class="fas fa-bolt"></i> Instant form creation</li>
+                        <li><i class="fas fa-palette"></i> Beautiful web interface</li>
+                        <li><i class="fas fa-code"></i> CLI and API access</li>
+                        <li><i class="fas fa-shield-alt"></i> Professional Tally integration</li>
+                    </ul>
+                </div>
+                
+                <div class="demo-box">
+                    <div class="demo-title">See it in action:</div>
+                    <div class="demo-code">
+                        "Create a client intake form with:<br>
+                        - Personal information<br>
+                        - Project requirements<br>
+                        - Budget range<br>
+                        - Timeline preferences<br>
+                        - File upload for references"
+                    </div>
+                    <div class="demo-result">
+                        ✅ Form created in 3 seconds<br>
+                        🔗 https://tally.so/r/abc123<br>
+                        📊 Ready to collect responses
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Make your workflow feel effortless</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <h3>AI-Powered Creation</h3>
+                    <p>Paste complex prompts from ChatGPT, Claude, or any AI and watch forms come to life instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-rocket"></i></div>
+                    <h3>Lightning Fast</h3>
+                    <p>Create forms in seconds, not minutes. What used to take 45+ minutes now takes under 10 seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-desktop"></i></div>
+                    <h3>Beautiful Interface</h3>
+                    <p>Modern, responsive web UI that works perfectly on desktop, tablet, and mobile devices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-terminal"></i></div>
+                    <h3>CLI & API Access</h3>
+                    <p>Use via command line, integrate into your workflow, or build custom applications on top.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-link"></i></div>
+                    <h3>Tally Integration</h3>
+                    <p>Full integration with Tally.so - create, manage, and analyze forms seamlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-gift"></i></div>
+                    <h3>Budget Friendly</h3>
+                    <p>Open source and free to use. Only pay when you upgrade Tally through our referral link.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial -->
+    <section class="testimonial" id="testimonials">
+        <div class="container">
+            <div class="testimonial-content">
+                <p class="testimonial-text">"I would have taken me at least 45 minutes to create this form manually and it is a tedious process. I transcribed a voice note from my client, gave it to AI to extract requirements and create a prompt for creating the form and then used the prompt in Respira Forms Pro and boom - it created the form on the fly."</p>
+                <div class="testimonial-author">- Real User Testimonial</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple & Transparent Pricing</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Open Source</h3>
+                    <div class="pricing-price">Free</div>
+                    <div class="pricing-period">Forever</div>
+                    <ul class="pricing-features">
+                        <li>Unlimited form creation</li>
+                        <li>AI-powered parsing</li>
+                        <li>Web interface</li>
+                        <li>CLI access</li>
+                        <li>API integration</li>
+                        <li>Community support</li>
+                    </ul>
+                    <a href="https://github.com/webmyc/Respira-Tally" class="btn-primary">Get Started</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <h3 class="pricing-title">Tally Pro</h3>
+                    <div class="pricing-price">50% Off</div>
+                    <div class="pricing-period">First 3 months</div>
+                    <ul class="pricing-features">
+                        <li>Everything in Free</li>
+                        <li>Advanced Tally features</li>
+                        <li>Custom domains</li>
+                        <li>Priority support</li>
+                        <li>Analytics & insights</li>
+                        <li>Team collaboration</li>
+                    </ul>
+                    <a href="https://tally.cello.so/oBdspINgDfE" class="btn-primary">Get 50% Off</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3 class="pricing-title">Support Development</h3>
+                    <div class="pricing-price">☕</div>
+                    <div class="pricing-period">One-time</div>
+                    <ul class="pricing-features">
+                        <li>Help fund development</li>
+                        <li>Support new features</li>
+                        <li>Priority bug fixes</li>
+                        <li>Feature requests</li>
+                        <li>Community recognition</li>
+                        <li>Early access to updates</li>
+                    </ul>
+                    <a href="https://buymeacoffee.com/respira.buzz" class="btn-secondary">Buy Coffee</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to transform your form creation?</h2>
+            <p>Join developers and creators who are already saving hours every week.</p>
+            <div class="hero-buttons">
+                <a href="https://github.com/webmyc/Respira-Tally" class="btn-primary">
+                    <i class="fab fa-github"></i> Start Building Forms
+                </a>
+                <a href="https://tally.cello.so/oBdspINgDfE" class="btn-secondary">
+                    <i class="fas fa-gift"></i> Get Tally Discount
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Respira Forms Pro</h3>
+                    <p>Professional AI-powered form creation that transforms complex prompts into fully functional Tally forms in seconds.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <p><a href="https://github.com/webmyc/Respira-Tally">GitHub Repository</a></p>
+                    <p><a href="https://github.com/webmyc/Respira-Tally/blob/main/README.md">Documentation</a></p>
+                    <p><a href="https://github.com/webmyc/Respira-Tally/issues">Report Issues</a></p>
+                    <p><a href="https://github.com/webmyc/Respira-Tally/discussions">Community</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <p><a href="mailto:mihai@respira.cafe">mihai@respira.cafe</a></p>
+                    <p><a href="https://buymeacoffee.com/respira.buzz">Buy Me a Coffee</a></p>
+                    <p><a href="https://tally.cello.so/oBdspINgDfE">Get Tally Discount</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <p><a href="https://tally.so">Tally.so</a></p>
+                    <p><a href="https://developers.tally.so">Tally API Docs</a></p>
+                    <p><a href="https://github.com/webmyc/Respira-Tally/releases">Releases</a></p>
+                </div>
+            </div>
+            
+            <div class="disclaimer">
+                <p><strong>Disclaimer:</strong> Respira Forms Pro is an independent open-source project and is not affiliated with, endorsed by, or sponsored by Tally.so. We are simply fans of their platform and want to make it more accessible through AI-powered tools.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
