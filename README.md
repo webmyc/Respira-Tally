@@ -293,13 +293,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 **Email**: [hello@respira.com](mailto:hello@respira.com)
+- 📧 **Email**: [mihai@respira.cafe](mailto:mihai@respira.cafe)
 - 🐛 **Issues**: [GitHub Issues](https://github.com/webmyc/Respira-Tally/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/webmyc/Respira-Tally/discussions)
 
 ## 🌟 Show Your Support
 
 Give a ⭐️ if this project helped you!
+
+### ☕ Support Development
+
+Love this app and want to support the development of Respira Tally and other Respira apps? 
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/respira.buzz)
+
+**☕ [Buy Me a Coffee](https://buymeacoffee.com/respira.buzz)** - Help fund development of this and other Respira applications!
 
 ---
 
