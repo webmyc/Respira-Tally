@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/web-server.js",
     "dev": "ts-node src/index.ts",
     "cli": "ts-node src/cli.ts",
     "web": "ts-node src/web-server.ts",
     "dev:web": "ts-node src/web-server.ts",
-    "test": "node test/test-runner.js"
+    "test": "node test/test-runner.js",
+    "vercel-build": "tsc"
   },
   "keywords": [
     "tally",
