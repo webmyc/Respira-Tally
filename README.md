@@ -6,11 +6,27 @@
 
 > **Transform complex prompts into live Tally forms instantly!** 🎯
 
+**🌐 [Try the Web Interface](https://respiraformspro.com) - No installation required!**
+
 **Respira Tally** is a powerful Node.js application that brings forms into existence by converting natural language descriptions into fully functional Tally.so forms. Simply paste complex prompts (generated with other AIs if needed) and watch as your forms are automatically created in your Tally account. The free Tally account provides everything you need - API access, unlimited forms, and all the features required for this to work seamlessly.
 
-**🎁 Get 50% off Tally with our referral link:** [https://tally.cello.so/oBdspINgDfE](https://tally.cello.so/oBdspINgDfE)
+**🎁 Get 50% off Tally with our referral link:** [https://go.respira.cafe/tally](https://go.respira.cafe/tally)
 
 Perfect for therapists, coaches, event organizers, and anyone who needs to create forms quickly and efficiently without the hassle of manual form building.
+
+## 🌐 Web Interface (Recommended)
+
+**🚀 [Try it now at respiraformspro.com](https://respiraformspro.com)**
+
+The easiest way to get started! No installation required - just visit the website, add your Tally API key, and start creating forms instantly.
+
+### Features:
+- ✅ **No Installation Required** - Works directly in your browser
+- ✅ **Beautiful UI** - Modern, responsive design
+- ✅ **Instant Setup** - Just add your Tally API key
+- ✅ **Real-time Form Creation** - Paste prompts and get forms instantly
+- ✅ **Form Management** - View, edit, and manage all your forms
+- ✅ **Mobile Friendly** - Works perfectly on all devices
 
 ## ✨ Features
 
@@ -93,7 +109,7 @@ Perfect for therapists, coaches, event organizers, and anyone who needs to creat
 
 ### 🎁 Get Started with Tally (50% Off!)
 
-1. **Sign up for Tally** using our referral link: [https://tally.cello.so/oBdspINgDfE](https://tally.cello.so/oBdspINgDfE)
+1. **Sign up for Tally** using our referral link: [https://go.respira.cafe/tally](https://go.respira.cafe/tally)
    - Get **50% off** for 3 months on any plan
    - Free account includes unlimited forms and API access
    - No credit card required to start
