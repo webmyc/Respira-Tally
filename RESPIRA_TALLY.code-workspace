@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../Respira-Forms-Pro-Website"
+		}
+	],
+	"settings": {},
+	"extensions": {
+		"recommendations": [
+			"openai.chatgpt"
+		]
+	}
+}

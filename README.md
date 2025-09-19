@@ -171,6 +171,40 @@ npm run cli list
 
 **From AI:** *"Design an event registration form for a tech conference with: attendee details, dietary restrictions, workshop preferences, networking interests, and payment processing"*
 
+### Structured JSON Prompts (Advanced)
+
+Want precise control over field order, labels, and placeholders? Respira Tally now understands structured JSON definitions. Paste a JSON object (plain or wrapped in a ```json code block) describing your form:
+
+```json
+{
+  "title": "Customer Feedback",
+  "confirmationMessage": "Thanks for helping us improve!",
+  "fields": [
+    { "type": "text", "label": "Full Name", "required": true },
+    { "type": "email", "label": "Work Email", "required": true, "placeholder": "you@example.com" },
+    { "type": "phone", "label": "Phone Number" },
+    { "type": "heading2", "text": "Rate your experience" },
+    { "type": "rating", "label": "Satisfaction", "max": 5 },
+    {
+      "type": "select",
+      "label": "Product Area",
+      "options": [
+        "Onboarding",
+        { "label": "Billing", "value": "billing", "default": true },
+        { "label": "Integrations", "payload": { "tag": "beta" } }
+      ]
+    },
+    { "type": "textarea", "label": "Feedback", "required": true }
+  ]
+}
+```
+
+Supported field types for structured prompts now cover every block the Tally MCP exposes: `text`, `email`, `phone`, `textarea`, `date`, `url`, `number`, `radio`, `select`, `checkbox`, `rating`, `file`, `signature`, `heading1`, `heading2`, `heading3`, `text_block`, `divider`, and even `title`. Each field accepts `label`, `required`, and `placeholder` (where relevant). Choice-based fields require an `options` array (strings or `{ "label": "...", "value": "...", "default": true }`).
+
+Need something more specialized (custom layouts, validation rules, max file size, etc.)? Add a `payload` object to any field and its properties will be merged into the generated Tally block, so you can forward advanced MCP parameters without waiting for a code change.
+
+Optional `confirmationMessage` and `redirectUrl` entries still override their defaults when the form is created.
+
 ### Web Interface
 1. Start the web server: `npm run web`
 2. Open http://localhost:3000
