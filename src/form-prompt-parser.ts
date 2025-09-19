@@ -176,7 +176,7 @@ export class FormPromptParser {
       uuid: uuidv4(),
       type: 'FORM_TITLE',
       groupUuid: uuidv4(),
-      groupType: 'TEXT',
+      groupType: 'FORM_TITLE',
       payload: {
         title,
         safeHTMLSchema: [[title]]
@@ -251,7 +251,8 @@ export class FormPromptParser {
         return null;
       }
 
-      const fields = Array.isArray(definition.fields) ? definition.fields : [];
+      const rawFields = definition.fields ?? definition.blocks;
+      const fields = Array.isArray(rawFields) ? rawFields : [];
       if (fields.length === 0) {
         return null;
       }
@@ -341,6 +342,7 @@ export class FormPromptParser {
       file: 'FILE',
       upload: 'FILE',
       file_upload: 'FILE',
+      input_file_upload: 'FILE',
       signature: 'SIGNATURE',
       sign: 'SIGNATURE',
       heading: 'HEADING_2',

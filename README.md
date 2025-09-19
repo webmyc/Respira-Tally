@@ -1,18 +1,17 @@
 # Respira Tally - AI Form Creator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Made for Developers](https://img.shields.io/badge/made_for-developers-1f6feb.svg)](https://respiraformspro.com)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-blue)](https://www.typescriptlang.org/)
 
-> **Transform complex prompts into live Tally forms instantly!** 🎯
+Respira Forms Pro is a free, open-source CLI and Node.js library that lets you generate Tally.so forms from either natural language or structured JSON prompts. Built on the Tally MCP and HTTP API, it slots directly into developer workflows.
+
+Automate the forms you build most often—event registrations, surveys, onboarding flows, and client intake forms—without leaving your terminal.
 
 **🌐 [Try the Web Interface](https://respiraformspro.com) - No installation required!**
 
-**Respira Tally** is a powerful Node.js application that brings forms into existence by converting natural language descriptions into fully functional Tally.so forms. Simply paste complex prompts (generated with other AIs if needed) and watch as your forms are automatically created in your Tally account. The free Tally account provides everything you need - API access, unlimited forms, and all the features required for this to work seamlessly.
-
 **🎁 Get 50% off Tally with our referral link:** [https://go.respira.cafe/tally](https://go.respira.cafe/tally)
-
-Perfect for therapists, coaches, event organizers, and anyone who needs to create forms quickly and efficiently without the hassle of manual form building.
 
 ## 🌐 Web Interface (Recommended)
 
@@ -105,7 +104,7 @@ The easiest way to get started! No installation required - just visit the websit
 
 - Node.js 16.0.0 or higher
 - A Tally.so account with API access
-- Tally.so API key
+- `TALLY_API_KEY` environment variable set
 
 ### 🎁 Get Started with Tally (50% Off!)
 
@@ -114,52 +113,65 @@ The easiest way to get started! No installation required - just visit the websit
    - Free account includes unlimited forms and API access
    - No credit card required to start
 
-2. **Get your API key:**
+2. **Generate your API key:**
    - Go to [Tally Settings > API](https://tally.so/settings/api)
-   - Generate your API key
-   - Copy it for use with Respira Tally
+   - Create a new API key and keep it handy
 
-3. **Start creating forms instantly!**
+### One-liners
 
-### Installation
+**Natural language (default)**
 
 ```bash
-# Clone the repository
+npx respira-tally "feedback form with name, email, 1-5 rating"
+```
+
+**Structured JSON (advanced)**
+
+```bash
+npx respira-tally job-app.json
+```
+
+Create `job-app.json` using the [Structured JSON Prompts](#structured-json-prompts) format shown below.
+
+### Install locally (optional)
+
+```bash
 git clone https://github.com/webmyc/Respira-Tally.git
 cd Respira-Tally
-
-# Install dependencies
 npm install
-
-# Build the project
 npm run build
 ```
 
-### Web Interface (Recommended)
+### Web interface (optional)
 
 ```bash
-# Start the web interface
 npm run web
-
-# Open your browser to http://localhost:3000
-# Add your Tally API key and start creating forms!
+open http://localhost:3000
 ```
 
-### CLI Usage
+## Structured JSON Prompts
+
+Respira Forms Pro understands structured payloads whenever you need pixel-perfect control. Save a definition like the following to `job-app.json`:
+
+```json
+{
+  "title": "Job Application Form",
+  "blocks": [
+    { "type": "INPUT_TEXT", "label": "Full Name", "required": true },
+    { "type": "INPUT_EMAIL", "label": "Email", "required": true },
+    { "type": "INPUT_FILE_UPLOAD", "label": "Resume", "maxFileSize": 10 },
+    { "type": "RATING", "label": "Culture Fit", "scale": 5 }
+  ]
+}
+```
+
+Run it through the CLI:
 
 ```bash
-# Set up your API key
-export TALLY_API_KEY=your_tally_api_key_here
-
-# Interactive mode - describe forms in plain English
-npm run cli interactive
-
-# Create a form from a prompt
-npm run cli create
-
-# List all your forms
-npm run cli list
+npx respira-tally job-app.json
 ```
+
+Supported block types include text, email, number, date, rating scales, file uploads, signatures, headings, dividers, selects/radios/checkboxes, content blocks, and more. Field names are case-insensitive and additional metadata (like `options`, `placeholder`, `payload`, or validation settings) is merged into the generated Tally blocks, so you always have an escape hatch for new MCP capabilities.
 
 ## 🎯 Examples
 
@@ -170,40 +182,6 @@ npm run cli list
 **From AI Assistant:** *"Build a therapy intake form with: personal information, medical history, current symptoms checklist, treatment goals, emergency contact, insurance information, and consent forms"*
 
 **From AI:** *"Design an event registration form for a tech conference with: attendee details, dietary restrictions, workshop preferences, networking interests, and payment processing"*
-
-### Structured JSON Prompts (Advanced)
-
-Want precise control over field order, labels, and placeholders? Respira Tally now understands structured JSON definitions. Paste a JSON object (plain or wrapped in a ```json code block) describing your form:
-
-```json
-{
-  "title": "Customer Feedback",
-  "confirmationMessage": "Thanks for helping us improve!",
-  "fields": [
-    { "type": "text", "label": "Full Name", "required": true },
-    { "type": "email", "label": "Work Email", "required": true, "placeholder": "you@example.com" },
-    { "type": "phone", "label": "Phone Number" },
-    { "type": "heading2", "text": "Rate your experience" },
-    { "type": "rating", "label": "Satisfaction", "max": 5 },
-    {
-      "type": "select",
-      "label": "Product Area",
-      "options": [
-        "Onboarding",
-        { "label": "Billing", "value": "billing", "default": true },
-        { "label": "Integrations", "payload": { "tag": "beta" } }
-      ]
-    },
-    { "type": "textarea", "label": "Feedback", "required": true }
-  ]
-}
-```
-
-Supported field types for structured prompts now cover every block the Tally MCP exposes: `text`, `email`, `phone`, `textarea`, `date`, `url`, `number`, `radio`, `select`, `checkbox`, `rating`, `file`, `signature`, `heading1`, `heading2`, `heading3`, `text_block`, `divider`, and even `title`. Each field accepts `label`, `required`, and `placeholder` (where relevant). Choice-based fields require an `options` array (strings or `{ "label": "...", "value": "...", "default": true }`).
-
-Need something more specialized (custom layouts, validation rules, max file size, etc.)? Add a `payload` object to any field and its properties will be merged into the generated Tally block, so you can forward advanced MCP parameters without waiting for a code change.
-
-Optional `confirmationMessage` and `redirectUrl` entries still override their defaults when the form is created.
 
 ### Web Interface
 1. Start the web server: `npm run web`
@@ -288,18 +266,16 @@ export TALLY_API_KEY=your_tally_api_key_here
 
 ## 📚 Supported Field Types
 
-The parser automatically detects and creates these field types:
+The parser automatically detects and creates these block types:
 
-- **text** - Names, companies, general text
-- **email** - Email addresses
-- **phone** - Phone numbers
-- **textarea** - Messages, comments, descriptions
-- **number** - Age, quantities, amounts
-- **date** - Dates, birthdays, appointments
-- **url** - Websites, links
-- **rating** - Satisfaction scores, ratings
-- **file** - File uploads, documents
-- **captcha** - Security verification
+- **Text inputs** (`text`, `email`, `phone`, `number`, `url`, `date`)
+- **Long form content** (`textarea`, `text_block`)
+- **Choices** (`select`, `radio`, `checkbox`) with custom option metadata
+- **Ratings** (1–10 or custom scales, shapes)
+- **File uploads** (single or multiple, size/type limits)
+- **Signature** capture
+- **Headings** (`heading1`, `heading2`, `heading3`) and dividers
+- **Form title** overrides and confirmation/redirect settings
 
 ## 🌐 Web Interface Features
 
@@ -309,6 +285,11 @@ The parser automatically detects and creates these field types:
 - **Form Management** - View, edit, and delete forms
 - **Real-time Updates** - Instant feedback and validation
 - **Mobile Friendly** - Works on all devices
+
+## ❓ FAQ
+
+**Why not just use Tally’s AI builder?**  
+Tally’s AI beta works inside their UI. Respira Forms Pro is automation-ready: it’s a CLI, API, and open-source toolkit with full JSON control, perfect for scripts, CI pipelines, or teams that need reproducible form definitions.
 
 ## 🤝 Contributing
 
