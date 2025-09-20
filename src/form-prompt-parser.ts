@@ -176,7 +176,7 @@ export class FormPromptParser {
       uuid: uuidv4(),
       type: 'FORM_TITLE',
       groupUuid: uuidv4(),
-      groupType: 'FORM_TITLE',
+      groupType: 'TEXT',
       payload: {
         title,
         safeHTMLSchema: [[title]]
@@ -194,11 +194,13 @@ export class FormPromptParser {
     const label = field.label;
     const isRequired = field.required ?? false;
 
+    const groupUuid = uuidv4();
+
     const labelBlock: TallyBlock = {
       uuid: uuidv4(),
       type: 'LABEL',
-      groupUuid: uuidv4(),
-      groupType: 'LABEL',
+      groupUuid,
+      groupType: 'QUESTION',
       payload: {
         safeHTMLSchema: [[label]]
       }
@@ -219,8 +221,8 @@ export class FormPromptParser {
     const inputBlock: TallyBlock = {
       uuid: uuidv4(),
       type: field.type,
-      groupUuid: uuidv4(),
-      groupType: field.type,
+      groupUuid,
+      groupType: 'QUESTION',
       payload
     };
 
@@ -545,11 +547,13 @@ export class FormPromptParser {
     placeholder?: string;
     extraPayload?: Record<string, any>;
   }): TallyBlock[] {
+    const groupUuid = uuidv4();
+
     const labelBlock: TallyBlock = {
       uuid: uuidv4(),
       type: 'LABEL',
-      groupUuid: uuidv4(),
-      groupType: 'LABEL',
+      groupUuid,
+      groupType: 'QUESTION',
       payload: {
         safeHTMLSchema: [[field.label]]
       }
@@ -583,8 +587,8 @@ export class FormPromptParser {
     const choiceBlock: TallyBlock = {
       uuid: uuidv4(),
       type: field.type,
-      groupUuid: uuidv4(),
-      groupType: field.type,
+      groupUuid,
+      groupType: 'QUESTION',
       payload
     };
 
@@ -699,112 +703,29 @@ export class FormPromptParser {
       }
     ];
 
-    // Name field
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'LABEL',
-      groupUuid: uuidv4(),
-      groupType: 'LABEL',
-      payload: {
-        safeHTMLSchema: [['Name']]
-      }
-    });
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'INPUT_TEXT',
-      groupUuid: uuidv4(),
-      groupType: 'INPUT_TEXT',
-      payload: {
-        isRequired: true,
-        placeholder: 'Enter your full name'
-      }
-    });
+    const addField = (config: { label: string; type: TallyBlockType; required?: boolean; placeholder?: string }) => {
+      blocks.push(
+        ...this.createFieldBlocks({
+          label: config.label,
+          type: config.type,
+          required: config.required,
+          placeholder: config.placeholder,
+        })
+      );
+    };
 
-    // Email field
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'LABEL',
-      groupUuid: uuidv4(),
-      groupType: 'LABEL',
-      payload: {
-        safeHTMLSchema: [['Email']]
-      }
-    });
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'INPUT_EMAIL',
-      groupUuid: uuidv4(),
-      groupType: 'INPUT_EMAIL',
-      payload: {
-        isRequired: true,
-        placeholder: 'Enter your email address'
-      }
-    });
+    addField({ label: 'Name', type: 'INPUT_TEXT', required: true, placeholder: 'Enter your full name' });
+    addField({ label: 'Email', type: 'INPUT_EMAIL', required: true, placeholder: 'Enter your email address' });
 
     if (includePhone) {
-      blocks.push({
-        uuid: uuidv4(),
-        type: 'LABEL',
-        groupUuid: uuidv4(),
-        groupType: 'LABEL',
-        payload: {
-          safeHTMLSchema: [['Phone Number']]
-        }
-      });
-      blocks.push({
-        uuid: uuidv4(),
-        type: 'INPUT_PHONE_NUMBER',
-        groupUuid: uuidv4(),
-        groupType: 'INPUT_PHONE_NUMBER',
-        payload: {
-          isRequired: false,
-          placeholder: 'Enter your phone number'
-        }
-      });
+      addField({ label: 'Phone Number', type: 'INPUT_PHONE_NUMBER', placeholder: 'Enter your phone number' });
     }
 
     if (includeCompany) {
-      blocks.push({
-        uuid: uuidv4(),
-        type: 'LABEL',
-        groupUuid: uuidv4(),
-        groupType: 'LABEL',
-        payload: {
-          safeHTMLSchema: [['Company']]
-        }
-      });
-      blocks.push({
-        uuid: uuidv4(),
-        type: 'INPUT_TEXT',
-        groupUuid: uuidv4(),
-        groupType: 'INPUT_TEXT',
-        payload: {
-          isRequired: false,
-          placeholder: 'Enter your company name'
-        }
-      });
+      addField({ label: 'Company', type: 'INPUT_TEXT', placeholder: 'Enter your company name' });
     }
 
-    // Message field
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'LABEL',
-      groupUuid: uuidv4(),
-      groupType: 'LABEL',
-      payload: {
-        safeHTMLSchema: [['Message']]
-      }
-    });
-    blocks.push({
-      uuid: uuidv4(),
-      type: 'TEXTAREA',
-      groupUuid: uuidv4(),
-      groupType: 'TEXTAREA',
-      payload: {
-        isRequired: true,
-        placeholder: 'Enter your message'
-      }
-    });
+    addField({ label: 'Message', type: 'TEXTAREA', required: true, placeholder: 'Enter your message' });
 
     const formData: CreateFormRequest = {
       name: title,
