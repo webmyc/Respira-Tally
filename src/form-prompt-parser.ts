@@ -872,11 +872,14 @@ export class FormPromptParser {
       case 'star_rating':
         blocks = this.createFieldBlocks({
           label,
-          type: 'RATING',
+          type: 'LINEAR_SCALE',
           required,
           extraPayload: {
-            maxRating: field.maxRating ?? 5,
-            shape: field.shape?.toUpperCase() ?? 'STAR'
+            minValue: 1,
+            maxValue: field.maxRating ?? 5,
+            step: 1,
+            minLabel: 'Poor',
+            maxLabel: 'Excellent'
           }
         });
         break;
