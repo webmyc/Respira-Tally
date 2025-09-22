@@ -790,16 +790,52 @@ export class FormPromptParser {
       case 'textarea':
         blocks = this.createFieldBlocks({ label, type: 'TEXTAREA', required, placeholder });
         break;
+      
+      // Dropdown/Select variations - map to DROPDOWN
       case 'dropdown':
-        blocks = this.createChoiceBlocks({ label, type: 'DROPDOWN', required, options: normalizeOptions(field.options) });
+      case 'select':
+      case 'single_select':
+        const dropdownOptions = normalizeOptions(field.options);
+        if (dropdownOptions.length > 0) {
+          blocks = this.createChoiceBlocks({ label, type: 'DROPDOWN', required, options: dropdownOptions });
+        } else {
+          // Fallback to text input if no options provided
+          blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter selection' });
+        }
         break;
+      
+      // Multiple choice/Radio variations - map to MULTIPLE_CHOICE
       case 'multiple_choice':
-        blocks = this.createChoiceBlocks({ label, type: 'MULTIPLE_CHOICE', required, options: normalizeOptions(field.options) });
+      case 'radio':
+      case 'single_choice':
+        const radioOptions = normalizeOptions(field.options);
+        if (radioOptions.length > 0) {
+          blocks = this.createChoiceBlocks({ label, type: 'MULTIPLE_CHOICE', required, options: radioOptions });
+        } else {
+          // Fallback to text input if no options provided
+          blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter choice' });
+        }
         break;
+      
+      // Checkbox variations - map to CHECKBOXES
       case 'checkboxes':
-        blocks = this.createChoiceBlocks({ label, type: 'CHECKBOXES', required, options: normalizeOptions(field.options) });
+      case 'checkbox':
+      case 'multi_select':
+      case 'multiple_select':
+        const checkboxOptions = normalizeOptions(field.options);
+        if (checkboxOptions.length > 0) {
+          blocks = this.createChoiceBlocks({ label, type: 'CHECKBOXES', required, options: checkboxOptions });
+        } else {
+          // Fallback to text input if no options provided
+          blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter selections' });
+        }
         break;
+      
+      // Rating/Scale variations - map to LINEAR_SCALE
       case 'rating':
+      case 'linear_scale':
+      case 'scale':
+      case 'star_rating':
         blocks = this.createFieldBlocks({
           label,
           type: 'LINEAR_SCALE',
@@ -812,10 +848,16 @@ export class FormPromptParser {
           }
         });
         break;
+      
       case 'date':
         blocks = this.createFieldBlocks({ label, type: 'INPUT_DATE', required, placeholder });
         break;
+      
+      // File upload variations - map to FILE_UPLOAD
       case 'file_upload':
+      case 'file':
+      case 'upload':
+      case 'attachment':
         blocks = this.createFieldBlocks({
           label,
           type: 'FILE_UPLOAD',
@@ -826,16 +868,21 @@ export class FormPromptParser {
           }
         });
         break;
+      
       case 'signature':
         blocks = this.createFieldBlocks({ label, type: 'SIGNATURE', required });
         break;
+      
       case 'number':
         blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter number' });
         break;
+      
       case 'url':
         blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter URL' });
         break;
+      
       default:
+        // Fallback to text input for unknown types
         blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder });
     }
 
