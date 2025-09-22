@@ -5,7 +5,7 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-blue)](https://www.typescriptlang.org/)
 
-Respira Forms Pro is a free, open-source CLI and Node.js library that lets you generate Tally.so forms from either natural language or structured JSON prompts. Built on the Tally MCP and HTTP API, it slots directly into developer workflows.
+Respira Forms Pro is a free, open-source CLI and Node.js library that lets you generate Tally.so forms from either natural language or structured JSON prompts. Built on the Tally MCP and HTTP API, it slots directly into developer workflows. Bring your own Groq key if you want witty titles, multi-section layouts, and conditional logic; without it the toolkit falls back to the deterministic keyword parser.
 
 Automate the forms you build most often—event registrations, surveys, onboarding flows, and client intake forms—without leaving your terminal.
 
@@ -45,7 +45,8 @@ The easiest way to get started! No installation required - just visit the websit
 
 - Node.js 16.0.0 or higher
 - A Tally.so account with API access
-- Tally.so API key
+- Tally.so API key (`TALLY_API_KEY`)
+- (Optional) Groq API key (`GROQ_API_KEY`) if you want to exercise the LLM-powered planner during tests
 
 ### Test the Application
 
@@ -55,12 +56,13 @@ The easiest way to get started! No installation required - just visit the websit
    ```
 
 2. **Test the CLI:**
-   ```bash
-   # Set your API key
-   export TALLY_API_KEY=your_tally_api_key_here
-   
-   # Test interactive mode
-   npm run cli interactive
+ ```bash
+  # Set your API key
+  export TALLY_API_KEY=your_tally_api_key_here
+  export GROQ_API_KEY=your_groq_api_key_here # optional but enables Groq planner
+  
+  # Test interactive mode
+  npm run cli interactive
    
    # Test form creation
    npm run cli create
@@ -103,8 +105,9 @@ The easiest way to get started! No installation required - just visit the websit
 ### Prerequisites
 
 - Node.js 16.0.0 or higher
-- A Tally.so account with API access
-- `TALLY_API_KEY` environment variable set
+- A Tally.so account with API access (**required**)
+- `TALLY_API_KEY` environment variable set (or run `npx respira-tally config`)
+- `GROQ_API_KEY` environment variable (**optional but recommended**) to enable Groq-powered planning; without it the CLI falls back to the keyword parser
 
 ### 🎁 Get Started with Tally (50% Off!)
 
@@ -172,6 +175,8 @@ npx respira-tally job-app.json
 ```
 
 Supported block types include text, email, number, date, rating scales, file uploads, signatures, headings, dividers, selects/radios/checkboxes, content blocks, and more. Field names are case-insensitive and additional metadata (like `options`, `placeholder`, `payload`, or validation settings) is merged into the generated Tally blocks, so you always have an escape hatch for new MCP capabilities.
+
+> 💡 **Tip:** Natural-language prompts produce the richest results when `GROQ_API_KEY` is set. If you omit it, the CLI falls back to the legacy keyword parser, which still works but won’t generate witty titles, multi-section layouts, or conditional logic automatically.
 
 ## 🎯 Examples
 

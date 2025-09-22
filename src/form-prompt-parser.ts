@@ -1,6 +1,7 @@
 import { TallyApiClient } from './tally-client';
 import { CreateFormRequest, TallyBlock, TallyBlockType, FormPromptOptions } from './types/tally';
 import { v4 as uuidv4 } from 'uuid';
+import { parseFormWithLLM, FormField, ParsedForm } from './llm-form-parser';
 
 export class FormPromptParser {
   private client: TallyApiClient;
@@ -17,12 +18,12 @@ export class FormPromptParser {
     options: FormPromptOptions = {},
     workspaceId: string
   ): Promise<any> {
-    const parsedForm = this.parsePrompt(prompt);
+    const parsedForm = await this.parsePrompt(prompt);
 
     const formData: CreateFormRequest = {
       name: options.title || parsedForm.title,
       workspaceId: workspaceId,
-      status: 'DRAFT',
+      status: 'PUBLISHED',
       blocks: parsedForm.blocks,
       settings: {
         language: 'en',
@@ -51,19 +52,32 @@ export class FormPromptParser {
   /**
    * Parse natural language prompt into form structure
    */
-  private parsePrompt(prompt: string): {
+  private async parsePrompt(prompt: string): Promise<{
     title: string;
     blocks: TallyBlock[];
     confirmationMessage?: string;
     redirectUrl?: string | null;
-  } {
+  }> {
     const structured = this.tryParseStructuredDefinition(prompt);
     if (structured) {
       return structured;
     }
 
-    const loweredPrompt = prompt.toLowerCase();
+    try {
+      const llmResult = await parseFormWithLLM(prompt);
+      const blocks = await this.convertLLMFormToBlocks(llmResult);
 
+      return {
+        title: llmResult.title,
+        blocks,
+        confirmationMessage: llmResult.settings?.confirmationMessage,
+        redirectUrl: llmResult.settings?.redirectUrl ?? null
+      };
+    } catch (error) {
+      console.warn('LLM parsing failed, falling back to keyword parser:', error);
+    }
+
+    const loweredPrompt = prompt.toLowerCase();
     const title = this.extractTitle(prompt);
     const blocks = this.parseFields(loweredPrompt, title);
 
@@ -168,6 +182,8 @@ export class FormPromptParser {
       });
     }
 
+    blocks.push(this.createAttributionBlock());
+
     return blocks;
   }
 
@@ -180,6 +196,70 @@ export class FormPromptParser {
       payload: {
         title,
         safeHTMLSchema: [[title]]
+      }
+    };
+  }
+
+  private async convertLLMFormToBlocks(form: ParsedForm): Promise<TallyBlock[]> {
+    const blocks: TallyBlock[] = [];
+    const fieldUuidMap = new Map<string, string>();
+
+    blocks.push(this.createFormTitleBlock(form.title || 'Custom Form'));
+
+    if (form.description) {
+      blocks.push(this.createContentBlock('TEXT', form.description));
+    }
+
+    if (form.sections && form.sections.length > 0) {
+      form.sections.forEach((section, sectionIndex) => {
+        if (section.title) {
+          blocks.push(this.createContentBlock('HEADING_2', section.title));
+        }
+        if (section.description) {
+          blocks.push(this.createContentBlock('TEXT', section.description));
+        }
+
+        if (section.fields && section.fields.length > 0) {
+          section.fields.forEach((field) => {
+            const fieldBlocks = this.convertLLMFieldToBlocks(field, fieldUuidMap);
+            if (fieldBlocks.length > 0) {
+              blocks.push(...fieldBlocks);
+            }
+          });
+        }
+
+        if (sectionIndex < form.sections.length - 1) {
+          blocks.push(this.createDividerBlock());
+        }
+      });
+    }
+
+    blocks.push(this.createAttributionBlock());
+
+    return blocks;
+  }
+
+  private createAttributionBlock(): TallyBlock {
+    const groupUuid = uuidv4();
+
+    return {
+      uuid: uuidv4(),
+      type: 'TEXT',
+      groupUuid,
+      groupType: 'TEXT',
+      payload: {
+        safeHTMLSchema: [
+          [
+            '✨ Generated with ',
+            {
+              href: 'https://RespiraFormsPro.com',
+              target: '_blank',
+              rel: 'noopener noreferrer',
+              style: 'color:#0ea5e9; text-decoration:underline;'
+            },
+            'RespiraFormsPro.com'
+          ]
+        ]
       }
     };
   }
@@ -200,7 +280,7 @@ export class FormPromptParser {
       uuid: uuidv4(),
       type: 'LABEL',
       groupUuid,
-      groupType: 'QUESTION',
+      groupType: 'LABEL',
       payload: {
         safeHTMLSchema: [[label]]
       }
@@ -334,17 +414,17 @@ export class FormPromptParser {
       website: 'INPUT_TEXT',
       link: 'INPUT_TEXT',
       number: 'INPUT_TEXT',
-      select: 'SELECT',
-      dropdown: 'SELECT',
-      choice: 'RADIO',
-      radio: 'RADIO',
-      checkbox: 'CHECKBOX',
-      multi_select: 'CHECKBOX',
+      select: 'DROPDOWN',
+      dropdown: 'DROPDOWN',
+      choice: 'MULTIPLE_CHOICE',
+      radio: 'MULTIPLE_CHOICE',
+      checkbox: 'CHECKBOXES',
+      multi_select: 'CHECKBOXES',
       rating: 'RATING',
-      file: 'FILE',
-      upload: 'FILE',
-      file_upload: 'FILE',
-      input_file_upload: 'FILE',
+      file: 'FILE_UPLOAD',
+      upload: 'FILE_UPLOAD',
+      file_upload: 'FILE_UPLOAD',
+      input_file_upload: 'FILE_UPLOAD',
       signature: 'SIGNATURE',
       sign: 'SIGNATURE',
       heading: 'HEADING_2',
@@ -396,7 +476,7 @@ export class FormPromptParser {
       }
     }
 
-    if (blockType === 'FILE') {
+    if (blockType === 'FILE_UPLOAD') {
       const allowMultiple = typeof field.allowMultiple === 'boolean'
         ? field.allowMultiple
         : typeof field.multiple === 'boolean'
@@ -460,7 +540,7 @@ export class FormPromptParser {
       return [this.createDividerBlock(payloadOverrides)];
     }
 
-    if (['SELECT', 'RADIO', 'CHECKBOX'].includes(blockType)) {
+    if (['DROPDOWN', 'MULTIPLE_CHOICE', 'CHECKBOXES'].includes(blockType)) {
       const options = this.normalizeChoiceOptions(field.options);
       if (options.length === 0) {
         return [];
@@ -469,7 +549,7 @@ export class FormPromptParser {
       const payloadOverrides = Object.keys(extraPayload).length > 0 ? extraPayload : undefined;
       return this.createChoiceBlocks({
         label: resolvedLabel,
-        type: blockType as 'SELECT' | 'RADIO' | 'CHECKBOX',
+        type: blockType as 'DROPDOWN' | 'MULTIPLE_CHOICE' | 'CHECKBOXES',
         required: isRequired,
         options,
         placeholder,
@@ -541,7 +621,7 @@ export class FormPromptParser {
 
   private createChoiceBlocks(field: {
     label: string;
-    type: 'SELECT' | 'RADIO' | 'CHECKBOX';
+    type: 'DROPDOWN' | 'MULTIPLE_CHOICE' | 'CHECKBOXES';
     required: boolean;
     options: Array<{ label: string; value: string; default?: boolean }>;
     placeholder?: string;
@@ -553,7 +633,7 @@ export class FormPromptParser {
       uuid: uuidv4(),
       type: 'LABEL',
       groupUuid,
-      groupType: 'QUESTION',
+      groupType: 'LABEL',
       payload: {
         safeHTMLSchema: [[field.label]]
       }
@@ -576,7 +656,7 @@ export class FormPromptParser {
       placeholder: field.placeholder || undefined
     };
 
-    if (field.type === 'CHECKBOX') {
+    if (field.type === 'CHECKBOXES') {
       payload.allowMultipleSelections = true;
     }
 
@@ -588,7 +668,7 @@ export class FormPromptParser {
       uuid: uuidv4(),
       type: field.type,
       groupUuid,
-      groupType: 'QUESTION',
+      groupType: field.type,
       payload
     };
 
@@ -636,7 +716,7 @@ export class FormPromptParser {
   }
 
   private supportsPlaceholder(blockType: TallyBlockType): boolean {
-    return ['INPUT_TEXT', 'INPUT_EMAIL', 'INPUT_PHONE_NUMBER', 'INPUT_DATE', 'TEXTAREA', 'SELECT'].includes(blockType);
+    return ['INPUT_TEXT', 'INPUT_EMAIL', 'INPUT_PHONE_NUMBER', 'INPUT_DATE', 'TEXTAREA', 'DROPDOWN'].includes(blockType);
   }
 
   private cleanPayload(payload: any): Record<string, any> | undefined {
@@ -675,6 +755,156 @@ export class FormPromptParser {
         return '';
       })
       .filter(Boolean);
+  }
+
+  private convertLLMFieldToBlocks(field: FormField, fieldUuidMap: Map<string, string>): TallyBlock[] {
+    const label = field.label?.trim() || this.capitalizeFirst(field.type.replace(/_/g, ' '));
+    const normalizedLabel = label.toLowerCase();
+    const required = field.required ?? false;
+    const placeholder = field.placeholder?.trim();
+
+    let blocks: TallyBlock[] = [];
+
+    const normalizeOptions = (options?: string[]): Array<{ label: string; value: string }> => {
+      if (!options || options.length === 0) {
+        return [];
+      }
+      return options
+        .map((option) => {
+          const trimmed = option.trim();
+          return trimmed.length > 0 ? { label: this.capitalizeFirst(trimmed), value: trimmed } : null;
+        })
+        .filter((opt): opt is { label: string; value: string } => opt !== null);
+    };
+
+    switch (field.type) {
+      case 'text':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder });
+        break;
+      case 'email':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_EMAIL', required, placeholder });
+        break;
+      case 'phone':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_PHONE_NUMBER', required, placeholder: placeholder || 'Enter phone number' });
+        break;
+      case 'textarea':
+        blocks = this.createFieldBlocks({ label, type: 'TEXTAREA', required, placeholder });
+        break;
+      case 'dropdown':
+        blocks = this.createChoiceBlocks({ label, type: 'DROPDOWN', required, options: normalizeOptions(field.options) });
+        break;
+      case 'multiple_choice':
+        blocks = this.createChoiceBlocks({ label, type: 'MULTIPLE_CHOICE', required, options: normalizeOptions(field.options) });
+        break;
+      case 'checkboxes':
+        blocks = this.createChoiceBlocks({ label, type: 'CHECKBOXES', required, options: normalizeOptions(field.options) });
+        break;
+      case 'rating':
+        blocks = this.createFieldBlocks({
+          label,
+          type: 'LINEAR_SCALE',
+          required,
+          extraPayload: {
+            min: 1,
+            max: field.maxRating ?? 5,
+            minLabel: 'Poor',
+            maxLabel: 'Excellent'
+          }
+        });
+        break;
+      case 'date':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_DATE', required, placeholder });
+        break;
+      case 'file_upload':
+        blocks = this.createFieldBlocks({
+          label,
+          type: 'FILE_UPLOAD',
+          required,
+          extraPayload: {
+            maxFileSize: typeof field.maxFileSize === 'number' ? Math.round(field.maxFileSize * 1024 * 1024) : undefined,
+            acceptedFileTypes: field.allowedFileTypes
+          }
+        });
+        break;
+      case 'signature':
+        blocks = this.createFieldBlocks({ label, type: 'SIGNATURE', required });
+        break;
+      case 'number':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter number' });
+        break;
+      case 'url':
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter URL' });
+        break;
+      default:
+        blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder });
+    }
+
+    if (blocks.length === 0) {
+      return blocks;
+    }
+
+    const inputBlock = blocks[blocks.length - 1];
+    fieldUuidMap.set(normalizedLabel, inputBlock.uuid);
+
+    if (field.showIf) {
+      const conditionalLogic = this.parseConditionalLogic(field.showIf, fieldUuidMap);
+      if (conditionalLogic) {
+        inputBlock.payload = {
+          ...inputBlock.payload,
+          conditionalLogic
+        };
+      }
+    }
+
+    return blocks;
+  }
+
+  private parseConditionalLogic(showIf: string, fieldUuidMap: Map<string, string>): any | null {
+    const conditionMatch = showIf.match(/^(.+?)\s*(<=|>=|<|>|=|equals?)\s*(.+)$/i);
+    if (!conditionMatch) {
+      console.warn('Could not parse conditional logic expression:', showIf);
+      return null;
+    }
+
+    const [, rawFieldName, rawOperator, rawValue] = conditionMatch;
+    const normalizedFieldName = rawFieldName.trim().toLowerCase();
+    const questionId = fieldUuidMap.get(normalizedFieldName);
+
+    if (!questionId) {
+      console.warn('Conditional logic references unknown field:', normalizedFieldName);
+      return null;
+    }
+
+    const operatorMap: Record<string, string> = {
+      '<=': 'LESS_THAN_OR_EQUAL_TO',
+      '>=': 'GREATER_THAN_OR_EQUAL_TO',
+      '<': 'LESS_THAN',
+      '>': 'GREATER_THAN',
+      '=': 'EQUALS',
+      equals: 'EQUALS'
+    };
+
+    const operatorKey = rawOperator.trim().toLowerCase();
+    const tallyOperator = operatorMap[operatorKey];
+
+    if (!tallyOperator) {
+      console.warn('Unsupported conditional operator:', rawOperator);
+      return null;
+    }
+
+    const numericValue = Number(rawValue.trim());
+    const value = Number.isFinite(numericValue) ? numericValue : rawValue.trim();
+
+    return {
+      action: 'SHOW',
+      conditions: [
+        {
+          questionId,
+          operator: tallyOperator,
+          value
+        }
+      ]
+    };
   }
 
   /**
@@ -730,7 +960,7 @@ export class FormPromptParser {
     const formData: CreateFormRequest = {
       name: title,
       workspaceId: workspaceId,
-      status: 'DRAFT',
+      status: 'PUBLISHED',
       blocks: blocks,
       settings: {
         language: 'en',
