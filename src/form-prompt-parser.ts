@@ -250,7 +250,7 @@ export class FormPromptParser {
       payload: {
         safeHTMLSchema: [
           [
-            '✨ Generated with ',
+            'Generated with ',
             {
               href: 'https://RespiraFormsPro.com',
               target: '_blank',
@@ -639,20 +639,26 @@ export class FormPromptParser {
       }
     };
 
-    const options = field.options.map(option => {
-      const { label, value, default: isDefault, ...rest } = option;
-      return {
-        uuid: uuidv4(),
-        label,
-        value,
-        isDefault: isDefault ?? false,
-        ...rest
-      };
-    });
+    // Determine the option block type based on the main field type
+    const optionType = field.type === 'DROPDOWN' ? 'DROPDOWN_OPTION'
+      : field.type === 'MULTIPLE_CHOICE' ? 'MULTIPLE_CHOICE_OPTION'
+      : 'MULTI_SELECT_OPTION'; // for CHECKBOXES
+
+    // Create individual option blocks that Tally requires
+    const optionBlocks: TallyBlock[] = field.options.map(option => ({
+      uuid: uuidv4(),
+      type: optionType,
+      groupUuid,
+      groupType: optionType,
+      payload: {
+        label: option.label,
+        value: option.value,
+        isDefault: option.default ?? false
+      }
+    }));
 
     const payload: Record<string, any> = {
       isRequired: field.required,
-      options,
       placeholder: field.placeholder || undefined
     };
 
@@ -672,7 +678,7 @@ export class FormPromptParser {
       payload
     };
 
-    return [labelBlock, choiceBlock];
+    return [labelBlock, choiceBlock, ...optionBlocks];
   }
 
   private createContentBlock(
@@ -795,9 +801,24 @@ export class FormPromptParser {
       case 'dropdown':
       case 'select':
       case 'single_select':
+      case 'dropdown_field':
+      case 'country_select':
         const dropdownOptions = normalizeOptions(field.options);
         if (dropdownOptions.length > 0) {
           blocks = this.createChoiceBlocks({ label, type: 'DROPDOWN', required, options: dropdownOptions });
+        } else if (field.type === 'country_select') {
+          // Generate default country list
+          const defaultCountries = [
+            { label: 'United States', value: 'US' },
+            { label: 'Canada', value: 'CA' },
+            { label: 'United Kingdom', value: 'GB' },
+            { label: 'Germany', value: 'DE' },
+            { label: 'France', value: 'FR' },
+            { label: 'Australia', value: 'AU' },
+            { label: 'Japan', value: 'JP' },
+            { label: 'Other', value: 'OTHER' }
+          ];
+          blocks = this.createChoiceBlocks({ label, type: 'DROPDOWN', required, options: defaultCountries });
         } else {
           // Fallback to text input if no options provided
           blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter selection' });
@@ -808,9 +829,17 @@ export class FormPromptParser {
       case 'multiple_choice':
       case 'radio':
       case 'single_choice':
+      case 'binary_choice':
         const radioOptions = normalizeOptions(field.options);
         if (radioOptions.length > 0) {
           blocks = this.createChoiceBlocks({ label, type: 'MULTIPLE_CHOICE', required, options: radioOptions });
+        } else if (field.type === 'binary_choice') {
+          // Generate default yes/no options
+          const defaultBinaryOptions = [
+            { label: 'Yes', value: 'yes' },
+            { label: 'No', value: 'no' }
+          ];
+          blocks = this.createChoiceBlocks({ label, type: 'MULTIPLE_CHOICE', required, options: defaultBinaryOptions });
         } else {
           // Fallback to text input if no options provided
           blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter choice' });
@@ -822,29 +851,50 @@ export class FormPromptParser {
       case 'checkbox':
       case 'multi_select':
       case 'multiple_select':
+      case 'consent_checkbox':
         const checkboxOptions = normalizeOptions(field.options);
         if (checkboxOptions.length > 0) {
           blocks = this.createChoiceBlocks({ label, type: 'CHECKBOXES', required, options: checkboxOptions });
+        } else if (field.type === 'consent_checkbox') {
+          // Generate single consent checkbox
+          const consentOptions = [
+            { label: 'I agree to the terms and conditions', value: 'consent' }
+          ];
+          blocks = this.createChoiceBlocks({ label, type: 'CHECKBOXES', required, options: consentOptions });
         } else {
           // Fallback to text input if no options provided
           blocks = this.createFieldBlocks({ label, type: 'INPUT_TEXT', required, placeholder: placeholder || 'Enter selections' });
         }
         break;
       
-      // Rating/Scale variations - map to LINEAR_SCALE
+      // Rating/Scale variations - map to proper types with correct payloads
       case 'rating':
-      case 'linear_scale':
-      case 'scale':
       case 'star_rating':
+        blocks = this.createFieldBlocks({
+          label,
+          type: 'RATING',
+          required,
+          extraPayload: {
+            maxRating: field.maxRating ?? 5,
+            shape: field.shape?.toUpperCase() ?? 'STAR'
+          }
+        });
+        break;
+      
+      case 'linear_scale':
+      case 'nps':
+      case 'scale':
+      case 'likert_scale':
         blocks = this.createFieldBlocks({
           label,
           type: 'LINEAR_SCALE',
           required,
           extraPayload: {
-            min: 1,
-            max: field.maxRating ?? 5,
-            minLabel: 'Poor',
-            maxLabel: 'Excellent'
+            minValue: field.minValue ?? (field.type === 'nps' ? 0 : 1),
+            maxValue: field.maxValue ?? (field.type === 'nps' ? 10 : field.maxRating ?? 5),
+            minLabel: field.minLabel ?? (field.type === 'nps' ? 'Not likely' : field.type === 'likert_scale' ? 'Strongly Disagree' : 'Poor'),
+            maxLabel: field.maxLabel ?? (field.type === 'nps' ? 'Very likely' : field.type === 'likert_scale' ? 'Strongly Agree' : 'Excellent'),
+            step: field.step ?? 1
           }
         });
         break;
