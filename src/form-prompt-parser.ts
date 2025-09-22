@@ -771,16 +771,26 @@ export class FormPromptParser {
 
     let blocks: TallyBlock[] = [];
 
-    const normalizeOptions = (options?: string[]): Array<{ label: string; value: string }> => {
+    const normalizeOptions = (options?: string[]): Array<{ label: string; value: string; text: string }> => {
       if (!options || options.length === 0) {
         return [];
       }
       return options
         .map((option) => {
           const trimmed = option.trim();
-          return trimmed.length > 0 ? { label: this.capitalizeFirst(trimmed), value: trimmed } : null;
+          if (!trimmed.length) return null;
+          const labelText = this.capitalizeFirst(trimmed);
+          const value = trimmed
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_|_$/g, '');
+          return {
+            label: labelText,
+            text: labelText,
+            value: value || labelText
+          };
         })
-        .filter((opt): opt is { label: string; value: string } => opt !== null);
+        .filter((opt): opt is { label: string; value: string; text: string } => opt !== null);
     };
 
     switch (field.type) {
@@ -872,18 +882,15 @@ export class FormPromptParser {
       case 'star_rating':
         blocks = this.createFieldBlocks({
           label,
-          type: 'LINEAR_SCALE',
+          type: 'RATING',
           required,
           extraPayload: {
-            minValue: 1,
-            maxValue: field.maxRating ?? 5,
-            step: 1,
-            minLabel: 'Poor',
-            maxLabel: 'Excellent'
+            maxRating: field.maxRating ?? 5,
+            shape: (field as any).shape ? (field as any).shape.toUpperCase() : 'STAR'
           }
         });
         break;
-      
+
       case 'linear_scale':
       case 'nps':
       case 'scale':
@@ -893,11 +900,23 @@ export class FormPromptParser {
           type: 'LINEAR_SCALE',
           required,
           extraPayload: {
-            minValue: field.minValue ?? (field.type === 'nps' ? 0 : 1),
-            maxValue: field.maxValue ?? (field.type === 'nps' ? 10 : field.maxRating ?? 5),
-            minLabel: field.minLabel ?? (field.type === 'nps' ? 'Not likely' : field.type === 'likert_scale' ? 'Strongly Disagree' : 'Poor'),
-            maxLabel: field.maxLabel ?? (field.type === 'nps' ? 'Very likely' : field.type === 'likert_scale' ? 'Strongly Agree' : 'Excellent'),
-            step: field.step ?? 1
+            minValue: (field as any).minValue ?? (field.type === 'nps' ? 0 : 1),
+            maxValue: (field as any).maxValue ?? (field.type === 'nps' ? 10 : field.maxRating ?? 5),
+            minLabel:
+              (field as any).minLabel ??
+              (field.type === 'nps'
+                ? 'Not likely'
+                : field.type === 'likert_scale'
+                ? 'Strongly Disagree'
+                : 'Lowest'),
+            maxLabel:
+              (field as any).maxLabel ??
+              (field.type === 'nps'
+                ? 'Very likely'
+                : field.type === 'likert_scale'
+                ? 'Strongly Agree'
+                : 'Highest'),
+            step: (field as any).step ?? 1
           }
         });
         break;
