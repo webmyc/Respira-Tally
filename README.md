@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-blue)](https://www.typescriptlang.org/)
 
 <div align="center">
-  <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop&crop=center" alt="Respira Tally - AI Form Creator" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+  <img src="https://respiraformspro.com/images/og-image.png" alt="Respira Tally - AI Form Creator" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
   <p><em>Transform natural language into beautiful Tally.so forms with AI-powered automation</em></p>
 </div>
 
