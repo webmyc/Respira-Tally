@@ -5,6 +5,11 @@
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.2+-blue)](https://www.typescriptlang.org/)
 
+<div align="center">
+  <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=600&fit=crop&crop=center" alt="Respira Tally - AI Form Creator" width="100%" style="border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);">
+  <p><em>Transform natural language into beautiful Tally.so forms with AI-powered automation</em></p>
+</div>
+
 Respira Forms Pro is a free, open-source CLI and Node.js library that lets you generate Tally.so forms from either natural language or structured JSON prompts. Built on the Tally MCP and HTTP API, it slots directly into developer workflows. Bring your own Groq key if you want witty titles, multi-section layouts, and conditional logic; without it the toolkit falls back to the deterministic keyword parser.
 
 Automate the forms you build most often—event registrations, surveys, onboarding flows, and client intake forms—without leaving your terminal.
