@@ -819,73 +819,45 @@ export class FormPromptParser {
   }): TallyBlock[] {
     const groupUuid = uuidv4();
 
-    const labelBlock: TallyBlock = {
+    // Create TITLE block for the question (like Tally AI does)
+    const titleBlock: TallyBlock = {
       uuid: uuidv4(),
-      type: 'LABEL',
+      type: 'TITLE',
       groupUuid,
-      groupType: 'LABEL',
+      groupType: 'QUESTION',
       payload: {
         safeHTMLSchema: [[field.label]]
       }
     };
 
-    // Determine the option block type based on the main field type
-    let optionType: TallyBlockType;
-    switch (field.type) {
-      case 'DROPDOWN':
-        optionType = 'DROPDOWN_OPTION';
-        break;
-      case 'MULTIPLE_CHOICE':
-        optionType = 'MULTIPLE_CHOICE_OPTION';
-        break;
-      case 'CHECKBOXES':
-        optionType = 'MULTI_SELECT_OPTION';
-        break;
-      case 'RANKING':
-        optionType = 'RANKING_OPTION';
-        break;
-      default:
-        optionType = 'MULTIPLE_CHOICE_OPTION';
-    }
+    // Determine the option block type - Tally AI uses MULTIPLE_CHOICE_OPTION for everything
+    let optionType: TallyBlockType = 'MULTIPLE_CHOICE_OPTION';
+    let groupType: string = 'MULTIPLE_CHOICE';
 
-    // Create individual option blocks that Tally requires
-    const optionBlocks: TallyBlock[] = field.options.map(option => ({
+    // Create individual option blocks with proper Tally AI structure
+    const optionBlocks: TallyBlock[] = field.options.map((option, index) => ({
       uuid: uuidv4(),
       type: optionType,
       groupUuid,
-      groupType: optionType,
+      groupType: groupType,
       payload: {
-        label: option.label,
-        value: option.value,
-        isDefault: option.default ?? false
+        index: index,
+        isFirst: index === 0,
+        isLast: index === field.options.length - 1,
+        isRequired: field.required,
+        randomize: false,
+        hasOtherOption: false,
+        allowMultiple: field.type === 'CHECKBOXES',
+        hasMaxChoices: false,
+        colorCodeOptions: false,
+        hasBadge: true,
+        badgeType: 'LETTERS',
+        hasDefaultAnswer: option.default ?? false,
+        text: option.label // Use the actual option text
       }
     }));
 
-    const payload: Record<string, any> = {
-      isRequired: field.required
-    };
-
-    if (field.placeholder) {
-      payload.placeholder = field.placeholder;
-    }
-
-    if (field.type === 'CHECKBOXES') {
-      payload.allowMultipleSelections = true;
-    }
-
-    if (field.extraPayload) {
-      Object.assign(payload, field.extraPayload);
-    }
-
-    const choiceBlock: TallyBlock = {
-      uuid: uuidv4(),
-      type: field.type,
-      groupUuid,
-      groupType: field.type,
-      payload
-    };
-
-    return [labelBlock, choiceBlock, ...optionBlocks];
+    return [titleBlock, ...optionBlocks];
   }
 
   private createSingleCheckboxBlock(field: {
@@ -895,45 +867,33 @@ export class FormPromptParser {
     description?: string;
   }): TallyBlock[] {
     const groupUuid = uuidv4();
-    const blocks: TallyBlock[] = [];
-
     const optionLabel = field.option.text?.trim() || field.option.label.trim();
 
-    if (field.label && field.label.trim().length > 0 && field.label.trim().toLowerCase() !== optionLabel.toLowerCase()) {
-      blocks.push({
-        uuid: uuidv4(),
-        type: 'LABEL',
-        groupUuid,
-        groupType: 'LABEL',
-        payload: {
-          safeHTMLSchema: [[field.label]]
-        }
-      });
-    }
-
-    const payload: Record<string, any> = {
-      isRequired: field.required,
-      text: optionLabel,
-      hasDefaultAnswer: field.option.default ?? false
+    // Create TITLE block for the question (like Tally AI does)
+    const titleBlock: TallyBlock = {
+      uuid: uuidv4(),
+      type: 'TITLE',
+      groupUuid,
+      groupType: 'QUESTION',
+      payload: {
+        safeHTMLSchema: [[field.label]]
+      }
     };
 
-    if (field.description) {
-      payload.description = field.description;
-    }
-
-    if (field.option.value) {
-      payload.value = field.option.value;
-    }
-
-    blocks.push({
+    // Create CHECKBOX block with proper Tally AI structure
+    const checkboxBlock: TallyBlock = {
       uuid: uuidv4(),
       type: 'CHECKBOX',
       groupUuid,
       groupType: 'CHECKBOX',
-      payload
-    });
+      payload: {
+        isRequired: field.required,
+        hasDefaultAnswer: field.option.default ?? false,
+        text: optionLabel // Use the actual checkbox text
+      }
+    };
 
-    return blocks;
+    return [titleBlock, checkboxBlock];
   }
 
   private createGenericBlock(type: TallyBlockType, payloadOverrides?: Record<string, any>): TallyBlock {
@@ -1800,13 +1760,13 @@ export class FormPromptParser {
             placeholder: 'e.g. Severity dropdown loses emoji formatting'
           },
           {
-            type: 'dropdown',
+            type: 'multiple_choice',
             label: 'Severity',
             required: true,
             options: severityOptions
           },
           {
-            type: 'dropdown',
+            type: 'multiple_choice',
             label: 'Area Affected',
             required: true,
             options: areaOptions
@@ -1881,7 +1841,7 @@ export class FormPromptParser {
             options: ['✉️ Email', '📞 Phone Call', '🎥 Video Call', '💬 Chat Message']
           },
           {
-            type: 'dropdown',
+            type: 'multiple_choice',
             label: 'Best Time of Day to Reach You',
             required: true,
             options: [
