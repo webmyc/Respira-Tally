@@ -217,7 +217,7 @@ CRITICAL: Create WITTY, CREATIVE, and ENGAGING titles that are fun and memorable
 Make titles playful, alliterative, and engaging while still being clear about the form's purpose!`;
 
   try {
-    const completion = await groqClient.chat.completions.create({
+    const completion: any = await groqClient.chat.completions.create({
       messages: [
         {
           role: "system",
@@ -229,8 +229,9 @@ Make titles playful, alliterative, and engaging while still being clear about th
         },
       ],
       model: "llama-3.1-8b-instant",
-      temperature: 0.7,
-      max_tokens: 1000,
+      temperature: 0.4,
+      max_tokens: 1600,
+      response_format: { type: "json_object" },
     });
 
     const response = completion.choices[0]?.message?.content;
@@ -240,17 +241,20 @@ Make titles playful, alliterative, and engaging while still being clear about th
       throw new Error("No response from LLM");
     }
 
-    // Extract JSON from response
-    const jsonMatch = response.match(/\{[\s\S]*\}/);
-    console.log("🔍 JSON match found:", !!jsonMatch);
-    
-    if (!jsonMatch) {
-      console.log("❌ No JSON found in response:", response);
-      throw new Error("No JSON found in LLM response");
+    let parsed: ParsedForm;
+    try {
+      console.log("🔍 Attempting to parse JSON directly from response");
+      parsed = JSON.parse(response);
+    } catch (directParseError) {
+      console.warn("⚠️ Direct JSON parse failed, attempting to extract JSON block", directParseError);
+      const jsonMatch = response.match(/\{[\s\S]*\}/);
+      console.log("🔍 JSON match found:", !!jsonMatch);
+      if (!jsonMatch) {
+        console.log("❌ No JSON found in response:", response);
+        throw new Error("No JSON found in LLM response");
+      }
+      parsed = JSON.parse(jsonMatch[0]);
     }
-
-    console.log("🔍 Attempting to parse JSON:", jsonMatch[0]);
-    const parsed = JSON.parse(jsonMatch[0]);
     console.log("✅ LLM parsed response:", JSON.stringify(parsed, null, 2));
 
     // Validate the response
